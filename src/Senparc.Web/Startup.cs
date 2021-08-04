@@ -8,11 +8,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Senparc.CO2NET;
 using Senparc.Ncf.Core.Models;
-using Senparc.Ncf.Core.MultiTenant;
 using Senparc.Ncf.Database;
-using Senparc.Ncf.Database.MySql;//根据需要添加
-using Senparc.Ncf.Database.Sqlite;//根据需要添加
-using Senparc.Ncf.Database.SqlServer;//根据需要添加
+//using Senparc.Ncf.Database.MySql;//根据需要添加或删除，使用需要引用 Senparc.Ncf.Database.MySql
+//using Senparc.Ncf.Database.Sqlite;//根据需要添加或删除，使用需要引用 Senparc.Ncf.Database.Sqlite
+using Senparc.Ncf.Database.SqlServer;//根据需要添加或删除，使用需要引用 Senparc.Ncf.Database.SqlServer
 using Senparc.Ncf.Service.MultiTenant;
 using Senparc.Web.Hubs;
 
@@ -33,9 +32,12 @@ namespace Senparc.Web
         public void ConfigureServices(IServiceCollection services)
         {
             //指定数据库类型
-            //services.AddDatabase<SqliteMemoryDatabaseConfiguration>();//使用 SQLite 数据库
-            services.AddDatabase<SQLServerDatabaseConfiguration>();//使用 SQLServer数据库
-            //services.AddDatabase<MySqlDatabaseConfiguration>();//使用 MySQL 数据库
+            /* AddDatabase<TDatabaseConfiguration>() 泛型类型说明：
+             *  SQLServerDatabaseConfiguration：     使用 SQLServer数据库
+             *  SqliteMemoryDatabaseConfiguration：  使用 SQLite 数据库
+             *  MySqlDatabaseConfiguration：         使用 MySQL 数据库
+             */
+            services.AddDatabase<SQLServerDatabaseConfiguration>();//默认使用 SQLServer数据库，根据需要改写
 
             //添加（注册） Ncf 服务（重要，必须！）
             services.AddNcfServices(Configuration, env, CompatibilityVersion.Version_3_0);
@@ -65,6 +67,7 @@ namespace Senparc.Web
 
             #endregion
 
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -75,6 +78,7 @@ namespace Senparc.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
 
             //Use NCF（必须）
